@@ -1,0 +1,75 @@
+A2A Cluster Bridge - Development TODO
+=====================================
+
+GOAL: Build a 3-agent observability team for Kagenti system monitoring
+
+ARCHITECTURE:
+- Team Leader: Routes requests using a2a-cluster-bridge (discover + invoke agents)
+- Cluster Observer: Monitors K8s resources (pods, logs, events) via k8s-readonly tools
+- Code Inspector: Reads Kagenti source code via filesystem tools
+
+PROGRESS:
+---------
+
+[X] Piece 1: Kubernetes Read-Only MCP Server
+    [X] Create k8s-readonly MCP server implementation (servers/k8s-readonly-server/)
+    [X] Create RBAC for read-only access (agent-team + kagenti-system namespaces)
+    [X] Create Component CR for deployment
+    [X] Add documentation
+    [ ] TEST: Deploy and verify tools work
+
+[ ] Piece 2: Gateway Config for k8s-readonly
+    [ ] Create MCPServer CR for k8s-readonly-server
+    [ ] Create HTTPRoute CR pointing to k8s-readonly-server service
+    [ ] Add documentation
+    [ ] TEST: Verify tools accessible via gateway with k8s_ prefix
+
+[ ] Piece 3: Cluster Observer Agent
+    [ ] Create Component CR for cluster-observer agent
+    [ ] Configure agent with k8s tools via MCP Gateway
+    [ ] Set system prompt for cluster monitoring
+    [ ] Add documentation
+    [ ] TEST: Send test messages, verify tool usage
+
+[ ] Piece 4: Kagenti Code Inspector MCP Server
+    [ ] Create filesystem MCP server for code inspection
+    [ ] Configure volume mount for Kagenti source
+    [ ] Create Component CR for deployment
+    [ ] Add documentation
+    [ ] TEST: Verify file reading and code search
+
+[ ] Piece 5: Gateway Config for code-inspector
+    [ ] Create MCPServer CR for kagenti-code-server
+    [ ] Create HTTPRoute CR
+    [ ] Add documentation
+    [ ] TEST: Verify code tools accessible via gateway with code_ prefix
+
+[ ] Piece 6: Code Inspector Agent
+    [ ] Create Component CR for code-inspector agent
+    [ ] Configure agent with code tools via MCP Gateway
+    [ ] Set system prompt for code explanation
+    [ ] Add documentation
+    [ ] TEST: Send test messages, verify code reading
+
+[ ] Piece 7: Team Leader Agent
+    [ ] Deploy a2a-cluster-bridge as sidecar to team leader
+    [ ] Create Component CR for team-leader agent
+    [ ] Configure agent with only a2a-cluster-bridge tools
+    [ ] Set system prompt for delegation
+    [ ] Add documentation
+    [ ] TEST: Verify discover_agents and send_message_to_agent work
+
+[ ] Piece 8: Integration Testing
+    [ ] Test full workflow: User -> Leader -> Specialist -> Response
+    [ ] Test cluster debugging scenario
+    [ ] Test code explanation scenario
+    [ ] Document example interactions
+
+[ ] Piece 9: Final Documentation
+    [ ] Update main README with complete architecture
+    [ ] Add deployment guide
+    [ ] Add troubleshooting guide
+    [ ] Add example queries and responses
+
+CURRENT STATUS: Testing Piece 1
+NEXT STEP: Deploy and test k8s-readonly MCP server
