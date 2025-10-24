@@ -1,0 +1,58 @@
+---
+apiVersion: platform.kagenti.dev/v1alpha1
+kind: Component
+metadata:
+  name: k8s-readonly-server
+  namespace: agent-team
+  labels:
+    kagenti.io/type: tool
+    kagenti.io/tool-protocol: mcp
+spec:
+  type: tool
+
+  deployer:
+    podTemplateSpec:
+      metadata:
+        labels:
+          app: k8s-readonly-server
+          kagenti.io/type: tool
+      spec:
+        serviceAccountName: k8s-readonly-server
+        containers:
+        - name: mcp-server
+          image: ghcr.io/kagenti/k8s-readonly-mcp-server:latest
+          ports:
+          - name: mcp
+            containerPort: 8080
+            protocol: TCP
+          env:
+          - name: MCP_SERVER_PORT
+            value: "8080"
+          - name: ALLOWED_NAMESPACES
+            value: "agent-team,kagenti-system"
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: mcp
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: mcp
+            initialDelaySeconds: 5
+            periodSeconds: 10
+
+  service:
+    ports:
+    - name: mcp
+      port: 8080
+      targetPort: mcp
+      protocol: TCP

@@ -1,0 +1,100 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: k8s-readonly-server
+  namespace: agent-team
+  labels:
+    app: k8s-readonly-server
+    kagenti.io/component: tool
+
+---
+# Role for reading resources in agent-team namespace
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: k8s-readonly-agent-team
+  namespace: agent-team
+rules:
+- apiGroups: [""]
+  resources:
+    - pods
+    - pods/log
+    - services
+    - endpoints
+    - configmaps
+    - events
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["apps"]
+  resources:
+    - deployments
+    - replicasets
+    - statefulsets
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["agent.kagenti.dev"]
+  resources:
+    - agents
+    - agentcards
+  verbs: ["get", "list", "watch"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: k8s-readonly-agent-team
+  namespace: agent-team
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: k8s-readonly-agent-team
+subjects:
+- kind: ServiceAccount
+  name: k8s-readonly-server
+  namespace: agent-team
+
+---
+# Role for reading resources in kagenti-system namespace
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: k8s-readonly-kagenti-system
+  namespace: kagenti-system
+rules:
+- apiGroups: [""]
+  resources:
+    - pods
+    - pods/log
+    - services
+    - endpoints
+    - configmaps
+    - events
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["apps"]
+  resources:
+    - deployments
+    - replicasets
+    - statefulsets
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["mcp.kagenti.com"]
+  resources:
+    - mcpservers
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["platform.kagenti.dev"]
+  resources:
+    - components
+  verbs: ["get", "list", "watch"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: k8s-readonly-from-agent-team
+  namespace: kagenti-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: k8s-readonly-kagenti-system
+subjects:
+- kind: ServiceAccount
+  name: k8s-readonly-server
+  namespace: agent-team
