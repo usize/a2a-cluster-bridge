@@ -310,11 +310,7 @@ def describe_pod(namespace: str, pod_name: str) -> str:
 
 def main():
     """Run the MCP server."""
-    import uvicorn
-    port = int(os.getenv("MCP_SERVER_PORT", "8080"))
-
-    # FastMCP provides a built-in HTTP server
-    uvicorn.run(mcp.get_asgi_app(), host="0.0.0.0", port=port)
+    mcp.run()
 
 
 if __name__ == "__main__":
