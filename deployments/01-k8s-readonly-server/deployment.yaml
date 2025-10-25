@@ -1,0 +1,59 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k8s-readonly-server
+  namespace: agent-team
+  labels:
+    app: k8s-readonly-server
+    kagenti.io/component: tool
+    kagenti.io/tool-protocol: mcp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: k8s-readonly-server
+  template:
+    metadata:
+      labels:
+        app: k8s-readonly-server
+        kagenti.io/component: tool
+    spec:
+      serviceAccountName: k8s-readonly-server
+      containers:
+      - name: mcp-server
+        image: image-registry.openshift-image-registry.svc:5000/agent-team/k8s-readonly-server:latest
+        imagePullPolicy: Always
+        ports:
+        - name: mcp
+          containerPort: 8080
+          protocol: TCP
+        env:
+        - name: MCP_SERVER_PORT
+          value: "8080"
+        - name: ALLOWED_NAMESPACES
+          value: "agent-team,kagenti-system"
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 256Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: k8s-readonly-server
+  namespace: agent-team
+  labels:
+    app: k8s-readonly-server
+    kagenti.io/component: tool
+spec:
+  ports:
+  - name: mcp
+    port: 8080
+    targetPort: mcp
+    protocol: TCP
+  selector:
+    app: k8s-readonly-server

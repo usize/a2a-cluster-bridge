@@ -310,7 +310,18 @@ def describe_pod(namespace: str, pod_name: str) -> str:
 
 def main():
     """Run the MCP server."""
-    mcp.run()
+    port = os.getenv("MCP_SERVER_PORT")
+    if port:
+        # Run as HTTP server for Kubernetes
+        import uvicorn
+        uvicorn.run(
+            mcp.create_app(),
+            host="0.0.0.0",
+            port=int(port)
+        )
+    else:
+        # Run in STDIO mode for local testing
+        mcp.run()
 
 
 if __name__ == "__main__":
