@@ -312,10 +312,11 @@ def main():
     """Run the MCP server."""
     port = os.getenv("MCP_SERVER_PORT")
     if port:
-        # Run as HTTP server for Kubernetes
+        # Run as HTTP server for Kubernetes (SSE transport)
         import uvicorn
+        app = mcp.sse_app()
         uvicorn.run(
-            mcp.create_app(),
+            app,
             host="0.0.0.0",
             port=int(port)
         )
