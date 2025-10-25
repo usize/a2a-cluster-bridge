@@ -39,3 +39,4 @@ spec:
     name: k8s-readonly-server-route
     namespace: agent-team
   toolPrefix: "k8s_"
+  path: "/sse"  # FastMCP sse_app() exposes SSE endpoint at /sse by default

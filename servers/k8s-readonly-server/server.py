@@ -314,7 +314,10 @@ def main():
     if port:
         # Run as HTTP server for Kubernetes (SSE transport)
         import uvicorn
+        # Use sse_app() which exposes SSE endpoint at /sse by default
+        # The MCPServer CR will be configured to connect at /sse
         app = mcp.sse_app()
+
         uvicorn.run(
             app,
             host="0.0.0.0",
