@@ -1,0 +1,41 @@
+---
+# HTTPRoute for k8s-readonly-server
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: k8s-readonly-server-route
+  namespace: agent-team
+  labels:
+    app: k8s-readonly-server
+    kagenti.io/component: tool
+spec:
+  parentRefs:
+  - name: mcp-gateway
+    namespace: gateway-system
+  hostnames:
+  - k8s-readonly.agent-team.svc.cluster.local
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /k8s-readonly
+    backendRefs:
+    - name: k8s-readonly-server
+      port: 8080
+---
+# MCPServer resource for gateway aggregation
+apiVersion: mcp.kagenti.com/v1alpha1
+kind: MCPServer
+metadata:
+  name: k8s-readonly-server
+  namespace: agent-team
+  labels:
+    app: k8s-readonly-server
+    kagenti.io/component: tool
+spec:
+  targetRef:
+    group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    name: k8s-readonly-server-route
+    namespace: agent-team
+  toolPrefix: "k8s_"
