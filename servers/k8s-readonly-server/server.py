@@ -314,14 +314,10 @@ def main():
     if port:
         # Run as HTTP server for Kubernetes (SSE transport)
         import uvicorn
-        from starlette.applications import Starlette
-        from starlette.routing import Mount
+        from fastmcp.server.http import create_sse_app
 
-        # Create SSE app and mount at /mcp (default path expected by MCP Gateway v0.1)
-        sse_app = mcp.sse_app()
-        app = Starlette(routes=[
-            Mount("/mcp", app=sse_app)
-        ])
+        # Create SSE app at /mcp endpoint (default path expected by MCP Gateway v0.1)
+        app = create_sse_app(mcp, sse_endpoint="/mcp")
 
         uvicorn.run(
             app,
