@@ -312,12 +312,11 @@ def main():
     """Run the MCP server."""
     port = os.getenv("MCP_SERVER_PORT")
     if port:
-        # Run as HTTP server for Kubernetes (SSE transport)
+        # Run as HTTP server for Kubernetes (use modern HTTP transport)
         import uvicorn
-        from fastmcp.server.http import create_sse_app
 
-        # Create SSE app at /mcp endpoint (default path expected by MCP Gateway v0.1)
-        app = create_sse_app(mcp, sse_endpoint="/mcp")
+        # Use modern http_app instead of deprecated sse_app
+        app = mcp.http_app()
 
         uvicorn.run(
             app,
